@@ -1,5 +1,6 @@
 import radio
 import music
+import math
 from utime import sleep_ms, ticks_ms, ticks_diff
 from microbit import display, Image, button_a, button_b
 
@@ -13,10 +14,9 @@ def cycle(iter):
 def main():
     POWER = cycle(range(0, 7 + 1))
     CHANNEL = cycle(range(0, 83 + 1))
-    DELAY = 1200
-    MAX_SIGNAL_TONE = 2000
-    MIN_SIGNAL_TONE = 500
-    PITCH_DURATION = 100
+    DELAY = 1000
+    MAX_SIGNAL_TONE = 3200
+    PITCH_DURATION = 80
     RADIO_CONFIG = {
         'group': 42,
         'length': 1,
@@ -42,16 +42,16 @@ def main():
             display.show(channel, delay=300, wait=False, clear=True)
         if ticks_diff(ticks_ms(), last) > DELAY:
             last = ticks_ms()
-            radio.send('')
+            radio.send('B')
             display.set_pixel(2, 2, 9)
             sleep_ms(100)
             display.clear()
             details = radio.receive_full()
             if details:
                 _, rssi, _ = details
-                tone = MAX_SIGNAL_TONE - abs(rssi * 15)
-                if tone < MIN_SIGNAL_TONE:
-                    tone = MIN_SIGNAL_TONE
+                tone = int((1 / abs(rssi)) ** 4 * 20000000000)
+                if tone > MAX_SIGNAL_TONE:
+                    tone = MAX_SIGNAL_TONE
                 music.pitch(tone, PITCH_DURATION, wait=False)
                 display.show(Image().invert(), delay=PITCH_DURATION, wait=False, clear=True)
         sleep_ms(100)
