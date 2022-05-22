@@ -6,8 +6,10 @@ Simple apps for micro:bit v2
 Requirements
 ------------
 
-`pip install uflash`
-`pip install microfs`
+```
+pip install uflash
+pip install microfs
+```
 
 Installation
 ------------
@@ -22,4 +24,7 @@ And copy launcher:
 
 And some other apps, for example:
 
-`ufs put pixels.py`
+```
+ufs put pixels.py
+ufs put beacon.py
+```
