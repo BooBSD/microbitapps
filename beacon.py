@@ -55,5 +55,3 @@ def main():
                 music.pitch(tone, PITCH_DURATION, wait=False)
                 display.show(Image().invert(), delay=PITCH_DURATION, wait=False, clear=True)
         sleep_ms(100)
-
-main()
