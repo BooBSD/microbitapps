@@ -1,4 +1,4 @@
-# microbitapps
+# micro:bit apps
 Simple apps for micro:bit v2
 
 `main.py` is launcher for other apps
