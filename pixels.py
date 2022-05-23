@@ -35,3 +35,7 @@ def main():
         display.set_pixel(randint(*DISPLAY[0]), randint(*DISPLAY[1]), randint(*PIXEL_BRIGHTNESS_LEVELS) if random() < r else 0)
         if random() < s:
             sleep(randint(0, sleep_max))
+
+
+if __name__ == '__main__':
+    main()
