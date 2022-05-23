@@ -14,11 +14,11 @@ def cycle(iter):
 
 
 def get_brightness(integer=False):
-    BRIGHTNESS_MIN = const(3)
+    BRIGHTNESS_MIN = const(4)
     light = display.read_light_level()
     if integer:
-        return int((light / 42.5) + BRIGHTNESS_MIN)
-    return ((light / 36.4) + BRIGHTNESS_MIN) / 10
+        return int((light / 51) + BRIGHTNESS_MIN)
+    return ((light / 42.5) + BRIGHTNESS_MIN) / 10
 
 
 POWER_IMAGE_PATTERN = (
