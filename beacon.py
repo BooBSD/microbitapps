@@ -1,6 +1,5 @@
 import radio
 import music
-import math
 from utime import sleep_ms, ticks_ms, ticks_diff
 from microbit import display, Image, button_a, button_b, set_volume
 
