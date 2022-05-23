@@ -2,7 +2,7 @@ import radio
 import music
 import math
 from utime import sleep_ms, ticks_ms, ticks_diff
-from microbit import display, Image, button_a, button_b
+from microbit import display, Image, button_a, button_b, set_volume
 
 
 def cycle(iter):
@@ -13,11 +13,13 @@ def cycle(iter):
 
 def main():
     POWER = cycle(range(0, 7 + 1))
-    CHANNEL = cycle(range(0, 83 + 1))
+    CHANNEL = 0
     DELAY = 1000
     MAX_SIGNAL_TONE = 3200
     PITCH_DURATION = 80
+    ICON_DELAY = 300
     RADIO_CONFIG = {
+        'channel': CHANNEL,
         'group': 42,
         'length': 1,
         'queue': 1,
@@ -25,21 +27,21 @@ def main():
     }
 
     power = next(POWER)
-    channel = next(CHANNEL)
+    sound = True
 
     radio.on()
-    radio.config(power=power, channel=channel, **RADIO_CONFIG)
+    radio.config(power=power, **RADIO_CONFIG)
 
     last = ticks_ms()
     while True:
         if button_a.was_pressed():
             power = next(POWER)
-            radio.config(power=power, channel=channel, **RADIO_CONFIG)
-            display.show(power, delay=300, wait=False, clear=True)
+            radio.config(power=power, **RADIO_CONFIG)
+            display.show(power, delay=ICON_DELAY, wait=False, clear=True)
         elif button_b.was_pressed():
-            channel = next(CHANNEL)
-            radio.config(power=power, channel=channel, **RADIO_CONFIG)
-            display.show(channel, delay=300, wait=False, clear=True)
+            sound = not sound
+            set_volume(int(sound) * 256)
+            display.show(Image.MUSIC_QUAVER if sound else Image.NO, delay=ICON_DELAY, wait=False, clear=True)
         if ticks_diff(ticks_ms(), last) > DELAY:
             last = ticks_ms()
             radio.send('B')
