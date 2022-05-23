@@ -2,6 +2,7 @@ import radio
 import music
 from utime import sleep_ms, ticks_ms, ticks_diff
 from microbit import display, Image, button_a, button_b, pin0, speaker
+from micropython import const
 
 
 def cycle(iter):
@@ -13,11 +14,11 @@ def cycle(iter):
 
 
 def get_brightness(integer=False):
+    BRIGHTNESS_MIN = const(3)
     light = display.read_light_level()
-    brightness = light / 350 + 0.3
     if integer:
-        brightness = int(brightness * 10.6 - 1)
-    return brightness
+        return int((light / 42.5) + BRIGHTNESS_MIN)
+    return ((light / 36.4) + BRIGHTNESS_MIN) / 10
 
 
 POWER_IMAGE_PATTERN = (
@@ -36,11 +37,11 @@ def get_power_image(power):
 
 def main():
     POWER = cycle(range(0, 7 + 1))
-    CHANNEL = 0
-    DELAY = 1000
-    MAX_SIGNAL_TONE = 3200
-    PITCH_DURATION = 50
-    ICON_DELAY = 300
+    CHANNEL = const(0)
+    DELAY = const(1000)
+    MAX_SIGNAL_TONE = const(3200)
+    PITCH_DURATION = const(50)
+    ICON_DELAY = const(300)
     RADIO_CONFIG = {
         'channel': CHANNEL,
         'group': 42,
