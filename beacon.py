@@ -14,9 +14,9 @@ def cycle(iter):
 
 def get_brightness(integer=False):
     light = display.read_light_level()
-    brightness = light / 318 + 0.2
+    brightness = light / 350 + 0.3
     if integer:
-        brightness = int(brightness * 10.9 - 1)
+        brightness = int(brightness * 10.6 - 1)
     return brightness
 
 
