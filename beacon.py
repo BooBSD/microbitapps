@@ -12,6 +12,14 @@ def cycle(iter):
             yield i
 
 
+def get_brightness(integer=False):
+    light = display.read_light_level()
+    brightness = light / 318 + 0.2
+    if integer:
+        brightness = int(brightness * 10.9 - 1)
+    return brightness
+
+
 POWER_IMAGE_PATTERN = (
     4, 5, 6, 7, 8,
     3, 4, 5, 6, 7,
@@ -23,7 +31,7 @@ POWER_IMAGE_PATTERN = (
 
 def get_power_image(power):
     pixels = bytearray((9 if p <= power else 0 for p in POWER_IMAGE_PATTERN))
-    return Image(5, 5, pixels)
+    return Image(5, 5, pixels) * get_brightness(integer=True)
 
 
 def main():
@@ -52,24 +60,24 @@ def main():
         if button_a.was_pressed():
             power = next(POWER)
             radio.config(power=power, **RADIO_CONFIG)
-            display.show(get_power_image(power), delay=ICON_DELAY, wait=False, clear=True)
+            display.show(get_power_image(power) * get_brightness(), delay=ICON_DELAY, wait=False, clear=True)
             if sound:
                 music.pitch(800 + (power * 100), PITCH_DURATION, wait=False)
         elif button_b.was_pressed():
             sound = not sound
             if sound:
                 music.play(['b5:1', 'e6:2'], wait=False)
-                display.show(Image.MUSIC_QUAVER, delay=ICON_DELAY, wait=False, clear=True)
+                display.show(Image.MUSIC_QUAVER * get_brightness(), delay=ICON_DELAY, wait=False, clear=True)
                 speaker.on()
             else:
-                display.show(Image.NO, delay=ICON_DELAY, wait=False, clear=True)
+                display.show(Image.NO * get_brightness(), delay=ICON_DELAY, wait=False, clear=True)
                 speaker.off()
                 # Dirty hack to turn off external buzzer
                 pin0.write_digital(0)
         if ticks_diff(ticks_ms(), last) > DELAY:
             last = ticks_ms()
             radio.send('B')
-            display.set_pixel(2, 2, 9)
+            display.set_pixel(2, 2, get_brightness(integer=True))
             sleep_ms(100)
             display.clear()
             details = radio.receive_full()
@@ -80,7 +88,7 @@ def main():
                     tone = MAX_SIGNAL_TONE
                 if sound:
                     music.pitch(tone, PITCH_DURATION, wait=False)
-                display.show(Image.HEART, delay=PITCH_DURATION, wait=False, clear=True)
+                display.show(Image.HEART * get_brightness(), delay=PITCH_DURATION, wait=False, clear=True)
         sleep_ms(100)
 
 
