@@ -79,7 +79,7 @@ def main():
                     tone = MAX_SIGNAL_TONE
                 if sound:
                     music.pitch(tone, PITCH_DURATION, wait=False)
-                display.show(Image().invert(), delay=PITCH_DURATION, wait=False, clear=True)
+                display.show(Image.HEART, delay=PITCH_DURATION, wait=False, clear=True)
         sleep_ms(100)
 
 
