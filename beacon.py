@@ -57,11 +57,14 @@ def main():
                 music.pitch(800 + (power * 100), PITCH_DURATION, wait=False)
         elif button_b.was_pressed():
             sound = not sound
-            if not sound:
+            if sound:
+                display.show(Image.MUSIC_QUAVER, delay=ICON_DELAY, wait=False, clear=True)
+                music.play(['b5:1', 'e6:2'], wait=False)
+            else:
                 # Dirty hack to turn off external buzzer
                 pin0.write_digital(0)
                 pin_speaker.write_digital(0)
-            display.show(Image.MUSIC_QUAVER if sound else Image.NO, delay=ICON_DELAY, wait=False, clear=True)
+                display.show(Image.NO, delay=ICON_DELAY, wait=False, clear=True)
         if ticks_diff(ticks_ms(), last) > DELAY:
             last = ticks_ms()
             radio.send('B')
