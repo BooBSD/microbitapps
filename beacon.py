@@ -1,7 +1,7 @@
 import radio
 import music
 from utime import sleep_ms, ticks_ms, ticks_diff
-from microbit import display, Image, button_a, button_b, pin0, pin_speaker
+from microbit import display, Image, button_a, button_b, pin0, speaker
 
 
 def cycle(iter):
@@ -58,13 +58,14 @@ def main():
         elif button_b.was_pressed():
             sound = not sound
             if sound:
-                display.show(Image.MUSIC_QUAVER, delay=ICON_DELAY, wait=False, clear=True)
                 music.play(['b5:1', 'e6:2'], wait=False)
+                display.show(Image.MUSIC_QUAVER, delay=ICON_DELAY, wait=False, clear=True)
+                speaker.on()
             else:
+                display.show(Image.NO, delay=ICON_DELAY, wait=False, clear=True)
+                speaker.off()
                 # Dirty hack to turn off external buzzer
                 pin0.write_digital(0)
-                pin_speaker.write_digital(0)
-                display.show(Image.NO, delay=ICON_DELAY, wait=False, clear=True)
         if ticks_diff(ticks_ms(), last) > DELAY:
             last = ticks_ms()
             radio.send('B')
