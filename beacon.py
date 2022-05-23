@@ -5,9 +5,25 @@ from microbit import display, Image, button_a, button_b, pin0, pin_speaker
 
 
 def cycle(iter):
+    iter = list(iter)
+    new_iter = iter + list(reversed(iter[1:-1]))
     while True:
-        for i in iter:
+        for i in new_iter:
             yield i
+
+
+POWER_IMAGE_PATTERN = (
+    4, 5, 6, 7, 8,
+    3, 4, 5, 6, 7,
+    2, 3, 4, 5, 6,
+    1, 2, 3, 4, 5,
+    0, 1, 2, 3, 4,
+)
+
+
+def get_power_image(power):
+    pixels = bytearray((9 if p <= power else 0 for p in POWER_IMAGE_PATTERN))
+    return Image(5, 5, pixels)
 
 
 def main():
@@ -15,7 +31,7 @@ def main():
     CHANNEL = 0
     DELAY = 1000
     MAX_SIGNAL_TONE = 3200
-    PITCH_DURATION = 80
+    PITCH_DURATION = 50
     ICON_DELAY = 300
     RADIO_CONFIG = {
         'channel': CHANNEL,
@@ -36,7 +52,9 @@ def main():
         if button_a.was_pressed():
             power = next(POWER)
             radio.config(power=power, **RADIO_CONFIG)
-            display.show(power, delay=ICON_DELAY, wait=False, clear=True)
+            display.show(get_power_image(power), delay=ICON_DELAY, wait=False, clear=True)
+            if sound:
+                music.pitch(800 + (power * 100), PITCH_DURATION, wait=False)
         elif button_b.was_pressed():
             sound = not sound
             if not sound:
