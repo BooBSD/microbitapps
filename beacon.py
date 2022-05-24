@@ -36,7 +36,7 @@ def get_power_image(power):
 
 
 def main():
-    POWER = cycle(range(0, 7 + 1))
+    POWER = cycle(range(0, 8 + 1))
     CHANNEL = const(0)
     DELAY = const(1000)
     MAX_SIGNAL_TONE = const(3200)
