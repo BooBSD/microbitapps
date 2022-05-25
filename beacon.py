@@ -64,16 +64,18 @@ def main():
             radio.config(power=power, **RADIO_CONFIG)
             display.show(get_power_image(power) * get_brightness(), delay=ICON_DELAY, wait=False, clear=True)
             if sound:
-                music.pitch(800 + (power * 100), PITCH_DURATION, wait=False)
+                speaker.on()
+                music.pitch(800 + (power * 100), PITCH_DURATION, wait=True)
+                speaker.off()  # Trying to optimize power consumption
         elif button_b.was_pressed():
             sound = not sound
             if sound:
-                music.play(['b5:1', 'e6:2'], wait=False)
                 display.show(Image.MUSIC_QUAVER * get_brightness(), delay=ICON_DELAY, wait=False, clear=True)
                 speaker.on()
+                music.play(['b5:1', 'e6:2'], wait=True)
+                speaker.off()  # Trying to optimize power consumption
             else:
                 display.show(Image.NO * get_brightness(), delay=ICON_DELAY, wait=False, clear=True)
-                speaker.off()
         if ticks_diff(ticks_ms(), last) > DELAY:
             last = ticks_ms()
             radio.send('B')
@@ -86,9 +88,11 @@ def main():
                 tone = int((1 / abs(rssi)) ** 4 * 20000000000)
                 if tone > MAX_SIGNAL_TONE:
                     tone = MAX_SIGNAL_TONE
-                if sound:
-                    music.pitch(tone, PITCH_DURATION, wait=False)
                 display.show(Image.HEART * get_brightness(), delay=PITCH_DURATION, wait=False, clear=True)
+                if sound:
+                    speaker.on()
+                    music.pitch(tone, PITCH_DURATION, wait=True)
+                    speaker.off()  # Trying to optimize power consumption
         sleep_ms(100)
 
 
