@@ -1,15 +1,16 @@
 import radio
 import music
 from utime import sleep_ms, ticks_ms, ticks_diff
-from microbit import display, Image, button_a, button_b, pin0, speaker
+from microbit import display, Image, button_a, button_b, speaker
 from micropython import const
 
 
-def cycle(iter):
+def cycle(iter, reverse=False):
     iter = list(iter)
-    new_iter = iter + list(reversed(iter[1:-1]))
+    if reverse:
+        iter = iter + list(reversed(iter[1:-1]))
     while True:
-        for i in new_iter:
+        for i in iter:
             yield i
 
 
@@ -36,7 +37,7 @@ def get_power_image(power):
 
 
 def main():
-    POWER = cycle(range(0, 8 + 1))
+    POWER = cycle(range(0, 8 + 1), reverse=True)
     CHANNEL = const(0)
     DELAY = const(1000)
     MAX_SIGNAL_TONE = const(3200)
@@ -73,8 +74,6 @@ def main():
             else:
                 display.show(Image.NO * get_brightness(), delay=ICON_DELAY, wait=False, clear=True)
                 speaker.off()
-                # Dirty hack to turn off external buzzer
-                pin0.write_digital(0)
         if ticks_diff(ticks_ms(), last) > DELAY:
             last = ticks_ms()
             radio.send('B')
