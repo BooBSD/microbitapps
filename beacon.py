@@ -37,7 +37,7 @@ def get_power_image(power):
 
 
 def main():
-    POWER = cycle(range(0, 8 + 1), reverse=True)
+    POWER = cycle(range(-1, 8 + 1), reverse=True)
     CHANNEL = const(0)
     DELAY = const(1000)
     MAX_SIGNAL_TONE = const(3200)
@@ -52,7 +52,8 @@ def main():
         'data_rate': radio.RATE_1MBIT,
     }
 
-    power = next(POWER)
+    for _ in range(18):
+        power = next(POWER)  # Starting power is 0 (not -1).
     sound = True
     flash = True
 
@@ -67,8 +68,11 @@ def main():
             display.show(image * get_brightness(), delay=ICON_DELAY, wait=True, clear=True)
         elif button_a.was_pressed():
             power = next(POWER)
-            radio.config(power=power, **RADIO_CONFIG)
-            display.show(get_power_image(power) * get_brightness(), delay=ICON_DELAY, wait=False, clear=True)
+            if power == -1:
+                display.show(Image.NO * get_brightness(), delay=ICON_DELAY, wait=False, clear=True)
+            else:
+                radio.config(power=power, **RADIO_CONFIG)
+                display.show(get_power_image(power) * get_brightness(), delay=ICON_DELAY, wait=False, clear=True)
             if sound:
                 speaker.on()
                 music.pitch(800 + (power * 100), PITCH_DURATION, wait=True)
@@ -84,10 +88,13 @@ def main():
                 speaker.off()  # Trying to optimize power consumption
         if ticks_diff(ticks_ms(), last) > DELAY:
             last = ticks_ms()
-            radio.send('B')
-            display.set_pixel(2, 2, get_brightness(integer=True))
-            sleep_ms(100)
-            display.clear()
+            if power == -1:
+                sleep_ms(100)
+            else:
+                radio.send('B')
+                display.set_pixel(2, 2, get_brightness(integer=True))
+                sleep_ms(100)
+                display.clear()
             details = radio.receive_full()
             if details:
                 _, rssi, _ = details
