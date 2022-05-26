@@ -1,7 +1,7 @@
 import radio
 import music
 from utime import sleep_ms, ticks_ms, ticks_diff
-from microbit import display, Image, button_a, button_b, speaker
+from microbit import display, Image, button_a, button_b, pin_logo, speaker
 from micropython import const
 
 
@@ -54,13 +54,18 @@ def main():
 
     power = next(POWER)
     sound = True
+    flash = True
 
     radio.on()
     radio.config(power=power, **RADIO_CONFIG)
 
     last = ticks_ms()
     while True:
-        if button_a.was_pressed():
+        if pin_logo.is_touched():
+            flash = not flash
+            image = Image.HEART if flash else Image.NO
+            display.show(image * get_brightness(), delay=ICON_DELAY, wait=True, clear=True)
+        elif button_a.was_pressed():
             power = next(POWER)
             radio.config(power=power, **RADIO_CONFIG)
             display.show(get_power_image(power) * get_brightness(), delay=ICON_DELAY, wait=False, clear=True)
@@ -70,13 +75,13 @@ def main():
                 speaker.off()  # Trying to optimize power consumption
         elif button_b.was_pressed():
             sound = not sound
+            image = Image.MUSIC_QUAVER if sound else Image.NO
+            display.show(image * get_brightness(), delay=ICON_DELAY, wait=False, clear=True)
             if sound:
                 display.show(Image.MUSIC_QUAVER * get_brightness(), delay=ICON_DELAY, wait=False, clear=True)
                 speaker.on()
                 music.play(['b5:1', 'e6:2'], wait=True)
                 speaker.off()  # Trying to optimize power consumption
-            else:
-                display.show(Image.NO * get_brightness(), delay=ICON_DELAY, wait=False, clear=True)
         if ticks_diff(ticks_ms(), last) > DELAY:
             last = ticks_ms()
             radio.send('B')
@@ -86,12 +91,13 @@ def main():
             details = radio.receive_full()
             if details:
                 _, rssi, _ = details
-                tone = int((1 / abs(rssi)) ** 4 * 20000000000)
-                if tone > MAX_SIGNAL_TONE:
-                    tone = MAX_SIGNAL_TONE
-                image = Image.HEART if rssi > RSSI_BIG_IMAGE else Image.HEART_SMALL
-                display.show(image * get_brightness(), delay=PITCH_DURATION, wait=False, clear=True)
+                if flash:
+                    image = Image.HEART if rssi > RSSI_BIG_IMAGE else Image.HEART_SMALL
+                    display.show(image * get_brightness(), delay=PITCH_DURATION, wait=False, clear=True)
                 if sound:
+                    tone = int((1 / abs(rssi)) ** 4 * 20000000000)
+                    if tone > MAX_SIGNAL_TONE:
+                        tone = MAX_SIGNAL_TONE
                     speaker.on()
                     music.pitch(tone, PITCH_DURATION, wait=True)
                     speaker.off()  # Trying to optimize power consumption
