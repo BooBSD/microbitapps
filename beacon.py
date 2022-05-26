@@ -41,6 +41,7 @@ def main():
     CHANNEL = const(0)
     DELAY = const(1000)
     MAX_SIGNAL_TONE = const(3200)
+    RSSI_BIG_IMAGE = const(-80)
     PITCH_DURATION = const(50)
     ICON_DELAY = const(300)
     RADIO_CONFIG = {
@@ -88,7 +89,8 @@ def main():
                 tone = int((1 / abs(rssi)) ** 4 * 20000000000)
                 if tone > MAX_SIGNAL_TONE:
                     tone = MAX_SIGNAL_TONE
-                display.show(Image.HEART * get_brightness(), delay=PITCH_DURATION, wait=False, clear=True)
+                image = Image.HEART if rssi > RSSI_BIG_IMAGE else Image.HEART_SMALL
+                display.show(image * get_brightness(), delay=PITCH_DURATION, wait=False, clear=True)
                 if sound:
                     speaker.on()
                     music.pitch(tone, PITCH_DURATION, wait=True)
